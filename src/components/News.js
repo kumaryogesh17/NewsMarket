@@ -4,6 +4,7 @@ import Spinner from './Spinner.js';
 import PropTypes from 'prop-types';
 import InfiniteScroll from "react-infinite-scroll-component";
 
+require('dotenv').config();
 
 export class News extends Component {
     static defaultProps = {
@@ -33,7 +34,7 @@ export class News extends Component {
 
 
     async componentDidMount() {
-        const url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=3897d1ec73df42d4b67ea415ca80eaf4&page=1&pageSize=${this.props.pageSize}`;
+        const url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=${process.env.REACT_APP_API_KEY}&page=1&pageSize=${this.props.pageSize}`;
         this.setState({ loading: true });
         let data = await fetch(url);
         let parsedData = await data.json();
@@ -45,7 +46,7 @@ export class News extends Component {
 
     /*
     handlePrevClick = async () => {
-        const url = `https://newsapi.org/v2/top-headlines?country=incategory=${this.props.category}&apiKey=3897d1ec73df42d4b67ea415ca80eaf4&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
+        const url = `https://newsapi.org/v2/top-headlines?country=incategory=${this.props.category}&apiKey=${process.env.REACT_APP_API_KEY}&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
         this.setState({ loading: true })
         let data = await fetch(url);
         let parsedData = await data.json();
@@ -60,7 +61,7 @@ export class News extends Component {
 
       handleNextClick = async () => {
 
-        const url = `https://newsapi.org/v2/top-headlines?country=incategory=${this.props.category}&apiKey=3897d1ec73df42d4b67ea415ca80eaf4&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+        const url = `https://newsapi.org/v2/top-headlines?country=incategory=${this.props.category}&apiKey=${process.env.REACT_APP_API_KEY}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
         this.setState({ loading: true })
         let data = await fetch(url);
         let parsedData = await data.json();
@@ -77,13 +78,14 @@ export class News extends Component {
 
     fetchMoreData = async () => {
         this.setState({ page: this.state.page + 1 });
-        const url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=3897d1ec73df42d4b67ea415ca80eaf4&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+        const url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=${process.env.REACT_APP_API_KEY}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
         this.setState({ loading: true });
         let data = await fetch(url);
         let parsedData = await data.json();
         this.setState({ articles: this.state.articles.concat(parsedData.articles),
                        totalResults: parsedData.totalResults,
                          });
+        this.setState({ loading: false });
                      
         console.log(parsedData);
     };
@@ -95,14 +97,14 @@ export class News extends Component {
         return (
             <>
                 
-                    <h1 className="text-center" style={{ marginBottom: "4%" }}><span className="badge rounded-pill bg-success"> NewsMarket - Top {this.capitalizeFirstLetter(this.props.category) } Headlines</span></h1>
+                    <h1 className="text-center" style={{ marginBottom: "1%" }}><span className="badge rounded-pill bg-success"> NewsMarket - Top {this.capitalizeFirstLetter(this.props.category) } Headlines</span></h1>
                      {this.state.loading && <Spinner />}
 
                     <InfiniteScroll
                         dataLength={this.state.articles.length}
                         next={this.fetchMoreData}
                         hasMore={this.state.articles.length !== this.state.totalResults}
-                        loader={<Spinner /> }
+                        loader={this.state.articles.length < 50 ? <Spinner/> : " "}
                     >
 
                         <div className="container">
